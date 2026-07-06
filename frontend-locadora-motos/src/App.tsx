@@ -4,12 +4,10 @@ import { AdminPanel } from './components/AdminPanel';
 import { ModalCheckout } from './components/ModalCheckout';
 
 function App() {
-  // 🏍️ Estados da Frota
   const [motos, setMotos] = useState<Moto[]>([]);
   const [motoSelecionada, setMotoSelecionada] = useState<Moto | null>(null);
   const [historicoFinalizado, setHistoricoFinalizado] = useState<any[]>([]);
   
-  // 🧭 Estados de Navegação e Filtros Avançados
   const [view, setView] = useState<'catalogo' | 'login' | 'cadastro' | 'meus-alugueis' | 'admin'>('catalogo');
   const [busca, setBusca] = useState('');
   const [filtroMarca, setFiltroMarca] = useState('');
@@ -17,7 +15,6 @@ function App() {
   const [filtrarDisponiveis, setFiltrarDisponiveis] = useState(false);
   const [carregando, setCarregando] = useState<boolean>(false);
   
-  // 👤 Estados de Autenticação
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
@@ -26,12 +23,10 @@ function App() {
   const [usuario, setUsuario] = useState<string | null>(sessionStorage.getItem('usuario'));
   const [historicoAlugueis, setHistoricoAlugueis] = useState<any[]>([]);
   
-  // 📊 Estados do Painel Admin
   const [role, setRole] = useState<string | null>(sessionStorage.getItem('role'));
   const [metricas, setMetricas] = useState<{ total_motos: number; ativos: number; faturamento_total: number } | null>(null);
   const [alugueisAtivosGlobais, setAlugueisAtivosGlobais] = useState<any[]>([]);
   
-  // 📝 Campos do Formulário Admin (Cadastro/Edição)
   const [novoModelo, setNovoModelo] = useState('');
   const [novaMarca, setNovaMarca] = useState('');
   const [novoPrecoDiaria, setNovoPrecoDiaria] = useState('');
@@ -42,11 +37,9 @@ function App() {
   const [novaImagem, setNovaImagem] = useState<File | null>(null);
   const [motoEmEdicao, setMotoEmEdicao] = useState<Moto | null>(null);
   
-  // 🔢 Estados do Aluguel
   const [diasAluguel, setDiasAluguel] = useState<number>(1);
   const [docCondutor, setDocCondutor] = useState<string>('');
 
-  // 💳 Estados do Simulador de Pagamento
   const [etapaCheckout, setEtapaCheckout] = useState<'dados' | 'pagamento'>('dados');
   const [metodoPagamento, setMetodoPagamento] = useState<'pix' | 'cartao'>('pix');
   const [numCartao, setNumCartao] = useState('');
@@ -54,10 +47,8 @@ function App() {
   const [validadeCartao, setValidadeCartao] = useState('');
   const [cvvCartao, setCvvCartao] = useState('');
 
-  // 🔔 Controle de Notificações
   const [notificacao, setNotificacao] = useState<{ messaging: string; tipo: 'sucesso' | 'erro' } | null>(null);
 
-  // 🛰️ Efeito de Telemetria Simulada (Oscilação de RPM na marcha lenta)
   const [rpm, setRpm] = useState<number>(1100);
   useEffect(() => {
     const interval = setInterval(() => {
@@ -66,7 +57,6 @@ function App() {
     return () => clearInterval(interval);
   }, []);
 
-  // 🛡️ Renderizador de Logos Reais com Fallback Inteligente
   const renderLogoMarca = (marca: string) => {
     const m = marca.toUpperCase();
     let logoPath = '';
@@ -393,7 +383,7 @@ function App() {
       if (data.erro) {
         dispararAviso(data.erro, 'erro');
       } else {
-        dispararAviso(motoEmEdicao ? 'Máquina atualizada com sucesso! ⚡' : 'Nova máquina integrada! 🏍️', 'sucesso');
+        dispararAviso(motoEmEdicao ? 'Máquina updated com sucesso!' : 'Nova máquina integrada!', 'sucesso');
         setNovoModelo(''); setNovaMarca(''); setNovoPrecoDiaria(''); setNovoCc(''); setNovoCv(''); setNovoTorque(''); setNovoTipo('');
         setNovaImagem(null); setMotoEmEdicao(null);
         const fileInput = document.getElementById('input-foto') as HTMLInputElement;
@@ -423,15 +413,11 @@ function App() {
 
   return (
     <div style={{ backgroundColor: '#0D0D0E', color: '#FFFFFF', minHeight: '100vh', fontFamily: '"Inter", sans-serif', overflowX: 'hidden', display: 'flex', flexDirection: 'column' }}>
-      
-      {/* 🚀 ENGINE DE ANIMAÇÃO INTEGRADA: TODOS OS EFEITOS ATIVOS */}
       <style>{`
         @keyframes fadeUp {
           from { opacity: 0; transform: translateY(20px); }
           to { opacity: 1; transform: translateY(0); }
         }
-        
-        /* 1. WARP LINES EFFECT (Rastro de partículas/velocidade no Hero) */
         @keyframes warpVelocity {
           0% { background-position: 0px 0px; }
           100% { background-position: -400px 400px; }
@@ -441,8 +427,6 @@ function App() {
           background-size: 40px 40px;
           animation: warpVelocity 8s linear infinite;
         }
-
-        /* 2. LASER TELEMETRY SWEEP (Linha laser escaneando o painel) */
         @keyframes laserScanner {
           0% { top: 0%; opacity: 0; }
           10% { opacity: 0.8; }
@@ -456,8 +440,6 @@ function App() {
           animation: laserScanner 4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
           pointer-events: none;
         }
-
-        /* 3. NEON BREATHING EFFECT (Pulsar de brilho orgânico) */
         @keyframes neonBreath {
           0%, 100% { text-shadow: 0 0 4px rgba(16, 185, 129, 0.4); filter: brightness(1); }
           50% { text-shadow: 0 0 20px #10B981, 0 0 30px rgba(16, 185, 129, 0.6); filter: brightness(1.2); }
@@ -472,8 +454,6 @@ function App() {
         .neon-pulse-badge {
           animation: badgePulse 2s ease-in-out infinite;
         }
-
-        /* 4. PLASMA BORDER OVERRIDE (Facho laser correndo as bordas) */
         @keyframes plasmaMovement {
           0% { background-position: 0% 50%; }
           50% { background-position: 100% 50%; }
@@ -485,8 +465,6 @@ function App() {
           background-size: 300% 300%;
           animation: plasmaMovement 6s ease infinite;
         }
-
-        /* 5. CYBER IGNITION GLITCH EFFECT (Distorção rápida eletrônica no hover) */
         @keyframes cyberGlitch {
           0% { transform: translate(0); text-shadow: none; }
           20% { transform: translate(-2px, 2px); text-shadow: -2px 0 #10B981, 2px 0 #f43f5e; }
@@ -499,7 +477,6 @@ function App() {
           animation: cyberGlitch 0.3s linear infinite;
           color: #ffffff !important;
         }
-
         .anim-card {
           animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
@@ -519,7 +496,6 @@ function App() {
           transform: translateY(-6px);
         }
         .glow-effect:hover::after { opacity: 1; }
-
         .tactical-select {
           background-color: #0D0D0E; color: #ffffff; border: 1px solid rgba(255,255,255,0.08);
           padding: 12px 16px; border-radius: 8px; fontSize: 14px; outline: none; cursor: pointer; transition: 0.2s;
@@ -527,7 +503,6 @@ function App() {
         .tactical-select:focus { border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.15); }
       `}</style>
 
-      {/* 🧭 NAV CARBON COCKPIT (Com Efeito 5: Glitch no Logo) */}
       <nav style={{ 
         display: 'flex', justifyContent: 'space-between', alignItems: 'center', 
         padding: '20px 50px', backgroundColor: 'rgba(13, 13, 14, 0.94)', 
@@ -564,27 +539,18 @@ function App() {
         </div>
       </nav>
 
-      {/* PAINEL CENTRAL CONTEÚDO */}
       <main style={{ padding: '40px 50px', maxWidth: '1400px', margin: '0 auto', flex: 1, width: '100%', boxSizing: 'border-box' }}>
-        
-        {/* VISTA DO CATÁLOGO CARBON COCKPIT */}
         {view === 'catalogo' && (
           <>
-            {/* HERO COCKPIT (Modificado com Efeito 4: Plasma Border Container) */}
             <div className="plasma-border-container" style={{ marginBottom: '40px' }}>
-              
-              {/* Container interno (Recebe Efeito 1: Warp Background e Efeito 2: Laser Scanner) */}
               <div className="warp-speed-bg" style={{ 
                 position: 'relative', padding: '65px 40px', 
                 backgroundColor: '#1A1A1C', borderRadius: '23px', 
                 overflow: 'hidden', textAlign: 'center',
                 boxShadow: 'inset 0 0 80px rgba(0,0,0,0.8)'
               }}>
-                
-                {/* Efeito 2: Linha Laser ativa cortando verticalmente */}
                 <div className="laser-scanner-line" />
 
-                {/* HUD / TELEMETRIA EM TEMPO REAL */}
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '20px', marginBottom: '25px', opacity: 0.95, position: 'relative', zIndex: 2 }}>
                   <div style={{ backgroundColor: '#0D0D0E', border: '1px solid rgba(16,185,129,0.25)', borderRadius: '8px', padding: '6px 16px', fontSize: '12px', fontFamily: 'monospace' }}>
                     <span style={{ color: '#A1A1AA' }}>ENGINE:</span> <span style={{ color: '#10B981', fontWeight: 'bold' }}>READY TO LAUNCH</span>
@@ -592,7 +558,6 @@ function App() {
                   <div style={{ backgroundColor: '#0D0D0E', border: '1px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '6px 16px', fontSize: '12px', fontFamily: 'monospace' }}>
                     <span style={{ color: '#A1A1AA' }}>TCS:</span> <span style={{ color: '#ffffff' }}>SPORT MAP</span>
                   </div>
-                  {/* Badge RPM com Efeito 3: Neon Breath */}
                   <div className="neon-pulse-badge" style={{ backgroundColor: '#0D0D0E', border: '1px solid rgba(16,185,129,0.25)', borderRadius: '8px', padding: '6px 16px', fontSize: '12px', fontFamily: 'monospace', minWidth: '105px', transition: 'all 0.2s' }}>
                     <span style={{ color: '#A1A1AA' }}>RPM:</span> <span style={{ color: '#10B981', fontWeight: 'bold' }}>{rpm}</span>
                   </div>
@@ -602,14 +567,12 @@ function App() {
                   <div style={{ height: '100%', animation: 'greenDashboardSweep 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards' }} />
                 </div>
 
-                {/* Título com Efeito 3: Pulsar de Brilho Neon */}
                 <h2 style={{ color: '#ffffff', fontSize: '40px', fontWeight: 900, letterSpacing: '-1px', marginBottom: '14px', textTransform: 'uppercase', fontFamily: '"Impact", sans-serif', position: 'relative', zIndex: 2 }}>
                   A Máquina Muda. <span className="neon-pulse-text" style={{ color: '#10B981' }}>A Alma do Piloto</span> Continua a Mesma.
                 </h2>
               </div>
             </div>
 
-            {/* 🎛️ CENTRAL DE FILTROS AVANÇADOS COMBINADOS */}
             <div style={{ backgroundColor: '#1A1A1C', padding: '24px 30px', borderRadius: '16px', border: '1px solid rgba(16,185,129,0.12)', marginBottom: '40px', display: 'flex', flexDirection: 'column', gap: '20px', boxShadow: '0 15px 40px rgba(0,0,0,0.4)' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid rgba(255,255,255,0.03)', paddingBottom: '12px' }}>
                 <span style={{ fontSize: '12px', color: '#10B981', fontWeight: '800', letterSpacing: '1px', textTransform: 'uppercase' }}>🛠️ Módulo de Busca e Telemetria de Frota</span>
@@ -617,8 +580,6 @@ function App() {
               </div>
 
               <div style={{ display: 'flex', gap: '20px', flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                
-                {/* Filtro 1 */}
                 <div style={{ flex: '2 1 300px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <label style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 'bold', textTransform: 'uppercase' }}>Pesquisa Direta</label>
                   <input 
@@ -630,7 +591,6 @@ function App() {
                   />
                 </div>
 
-                {/* Filtro 2 */}
                 <div style={{ flex: '1 1 180px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <label style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 'bold', textTransform: 'uppercase' }}>Montadora</label>
                   <select 
@@ -646,7 +606,6 @@ function App() {
                   </select>
                 </div>
 
-                {/* Filtro 3 */}
                 <div style={{ flex: '2 1 240px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <label style={{ fontSize: '11px', color: '#A1A1AA', fontWeight: 'bold', textTransform: 'uppercase' }}>Teto do Orçamento</label>
@@ -665,7 +624,6 @@ function App() {
                   </div>
                 </div>
 
-                {/* Filtro 4 */}
                 <div style={{ flex: '1 1 auto' }}>
                   <button 
                     onClick={() => setFiltrarDisponiveis(!filtrarDisponiveis)} 
@@ -674,11 +632,9 @@ function App() {
                     {filtrarDisponiveis ? '🏆 SÓ DISPONÍVEIS' : '🔄 TODOS OS STATUS'}
                   </button>
                 </div>
-
               </div>
             </div>
 
-            {/* GRID DE CARDS STEALTH */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(330px, 1fr))', gap: '35px' }}>
               {motosFiltradas.map((moto, index) => {
                 const detalhes = getDetalhesMoto(moto.modelo);
@@ -724,7 +680,6 @@ function App() {
                           <span style={{ color: '#A1A1AA', fontSize: '10px', display: 'block', textTransform: 'uppercase', letterSpacing: '0.5px' }}>TARIFA</span>
                           <h4 style={{ margin: 0, fontSize: '24px', color: '#ffffff', fontWeight: '900', fontFamily: 'monospace' }}>R$ {Number(moto.preco_diaria).toFixed(2)}<span style={{ fontSize: '12px', color: '#A1A1AA', fontWeight: '400' }}>/dia</span></h4>
                         </div>
-                        {/* Botão de Ação com Efeito 5: Cyber Glitch no hover */}
                         <button onClick={() => setMotoSelecionada(moto)} className="cyber-glitch-hover" style={{ backgroundColor: '#10B981', color: '#000000', border: 'none', padding: '12px 22px', borderRadius: '8px', cursor: 'pointer', fontWeight: '800', fontSize: '13px', letterSpacing: '0.5px', boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)', transition: '0.15s' }}>RESERVAR</button>
                       </div>
                     </div>
@@ -735,7 +690,6 @@ function App() {
           </>
         )}
 
-        {/* VISTA DOS MEUS ALUGUÉIS */}
         {view === 'meus-alugueis' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '40px', animation: 'fadeUp 0.5s ease both' }}>
             <div>
@@ -781,7 +735,6 @@ function App() {
           </div>
         )} 
 
-        {/* PAINEL DO ADMINISTRADOR */}
         {view === 'admin' && (
           <div style={{ animation: 'fadeUp 0.5s ease both' }}>
             <AdminPanel 
@@ -793,7 +746,6 @@ function App() {
           </div>
         )}
 
-        {/* LOGIN / CADASTRO STEALTH FORM */}
         {(view === 'login' || view === 'cadastro') && (
           <div style={{ maxWidth: '420px', margin: '60px auto', backgroundColor: '#1A1A1C', padding: '45px', borderRadius: '20px', border: '1px solid rgba(16,185,129,0.2)', boxShadow: '0 25px 50px rgba(0,0,0,0.6)', animation: 'fadeUp 0.5s ease both' }}>
             <h2 style={{ color: '#ffffff', textAlign: 'center', marginBottom: '35px', fontSize: '26px', fontWeight: '900', letterSpacing: '-0.8px' }}>{view === 'login' ? 'Acessar Cockpit' : 'Criar Credenciais'}</h2>
@@ -809,13 +761,9 @@ function App() {
             </div>
           </div>
         )}
-
       </main>
 
-      {/* ==================== 🛠️ FOOTER INSTITUCIONAL STEALTH BLACK ==================== */}
       <footer style={{ backgroundColor: '#09090A', borderTop: '1px solid #10B981', padding: '60px 80px 30px', width: '100%', boxSizing: 'border-box', marginTop: 'auto', boxShadow: '0 -10px 40px rgba(0,0,0,0.5)' }}>
-        
-        {/* Top Row */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', textAlign: 'center', paddingBottom: '45px', borderBottom: '1px solid rgba(255,255,255,0.02)', marginBottom: '45px' }}>
           <h4 style={{ color: '#ffffff', fontSize: '25px', fontWeight: 900, letterSpacing: '1px', textTransform: 'uppercase', fontFamily: '"Impact", sans-serif', margin: '0 0 6px' }}>
             ENTRE NO MODO PERFORMANCE
@@ -829,7 +777,6 @@ function App() {
           </div>
         </div>
 
-        {/* Middle Row */}
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr 1fr', gap: '50px', marginBottom: '45px', textAlign: 'left' }}>
           <div>
             <h5 style={{ color: '#ffffff', fontSize: '13px', fontWeight: '800', letterSpacing: '1.5px', textTransform: 'uppercase', marginBottom: '20px' }}>NOSSA ESSÊNCIA</h5>
@@ -869,7 +816,6 @@ function App() {
           </div>
         </div>
 
-        {/* Bottom Row */}
         <div style={{ borderTop: '1px solid rgba(255,255,255,0.02)', paddingTop: '25px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '15px', fontSize: '12px', color: '#71717a' }}>
           <div>
             Balsante Motos ® {new Date().getFullYear()} - Todos os direitos reservados de pista.
@@ -888,7 +834,6 @@ function App() {
         </div>
       </footer>
 
-      {/* MODAL DE CHECKOUT */}
       {motoSelecionada && (
         <ModalCheckout 
           motoSelecionada={motoSelecionada} fecharModal={fecharModal} getDetalhesMoto={getDetalhesMoto} diasAluguel={diasAluguel} setDiasAluguel={setDiasAluguel}
@@ -900,7 +845,6 @@ function App() {
         />
       )}
 
-      {/* NOTIFICAÇÃO FLUTUANTE LUXO */}
       {notificacao && (
         <div style={{ 
           position: 'fixed', bottom: '35px', right: '35px', 
@@ -915,7 +859,6 @@ function App() {
           <span>{notificacao.messaging}</span>
         </div>
       )}
-
     </div>
   );
 }

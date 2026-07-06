@@ -33,10 +33,10 @@ app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
 const db = mysql.createConnection({
-  host: process.env.DB_HOST,
-  user: process.env.DB_USER,
+  host: process.env.DB_HOST || 'localhost',
+  user: process.env.DB_USER || 'root',
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+  database: process.env.DB_NAME || 'db_locadora'
 });
 
 db.connect((err) => {
@@ -47,15 +47,11 @@ db.connect((err) => {
   console.log('✅ Banco de dados conectado e sincronizado com sucesso!');
 });
 
-// ==========================================
-// 🛡️ TIPAGENS E MIDDLEWARES DE SEGURANÇA
-// ==========================================
 interface TokenPayload {
   id: number;
   role: string;
 }
 
-// Extensão da interface Request do Express para suportar a sessão do piloto autenticado
 interface AutenticadoRequest extends Request {
   usuarioLogado?: TokenPayload;
 }
@@ -84,11 +80,6 @@ const verificarAdmin = (req: AutenticadoRequest, res: Response, next: NextFuncti
   }
 };
 
-// ==========================================
-// 👤 ROTAS DE AUTENTICAÇÃO & USUÁRIOS
-// ==========================================
-
-// 📝 Cadastro de Usuários/Operadores
 app.post('/usuarios', async (req: Request, res: Response) => {
   const { nome, email, senha } = req.body;
   
@@ -112,7 +103,6 @@ app.post('/usuarios', async (req: Request, res: Response) => {
   }
 });
 
-// 🔐 Login Corporativo (Autenticação com envio de perfil de acesso)
 app.post('/login', (req: Request, res: Response) => {
   const { email, senha } = req.body;
 
@@ -143,11 +133,6 @@ app.post('/login', (req: Request, res: Response) => {
   });
 });
 
-// ==========================================
-// 🏍️ ROTAS DE MOTOS (FROTA E FICHA TÉCNICA)
-// ==========================================
-
-// Listar todas as motos da frota
 app.get('/motos', (req: Request, res: Response) => {
   const sql = 'SELECT * FROM motos';
   db.query(sql, (err, results) => {
@@ -156,7 +141,6 @@ app.get('/motos', (req: Request, res: Response) => {
   });
 });
 
-// Cadastrar nova moto com especificações completas de telemetria
 app.post('/motos', verificarToken, verificarAdmin, upload.single('imagem'), (req: AutenticadoRequest, res: Response) => {
   const { modelo, marca, preco_diaria, cc, cv, torque, tipo } = req.body;
 
@@ -173,7 +157,6 @@ app.post('/motos', verificarToken, verificarAdmin, upload.single('imagem'), (req
   });
 });
 
-// Atualizar especificações ou imagem de uma moto existente
 app.put('/motos/:id/editar', verificarToken, verificarAdmin, upload.single('imagem'), (req: AutenticadoRequest, res: Response) => {
   const { id } = req.params;
   const { modelo, marca, preco_diaria, cc, cv, torque, tipo } = req.body;
@@ -196,15 +179,10 @@ app.put('/motos/:id/editar', verificarToken, verificarAdmin, upload.single('imag
 
   db.query(sql, params, (err) => {
     if (err) return res.status(500).json({ erro: err.message });
-    res.json({ mensagem: 'Especificações da máquina atualizadas com sucesso! ⚡' });
+    res.json({ mensagem: 'Especificações da máquina updated com sucesso!' });
   });
 });
 
-// ==========================================
-// 📊 ROTAS ADMINISTRATIVAS (MÉTRICAS GLOBAL)
-// ==========================================
-
-// Buscar métricas de faturamento e status consolidados da locadora
 app.get('/admin/dashboard', verificarToken, verificarAdmin, (req: Request, res: Response) => {
   const sqlStats = `
     SELECT 
@@ -219,7 +197,6 @@ app.get('/admin/dashboard', verificarToken, verificarAdmin, (req: Request, res: 
   });
 });
 
-// Listar todos os contratos ativos no sistema global
 app.get('/admin/alugueis-ativos', verificarToken, verificarAdmin, (req: Request, res: Response) => {
   const sql = `
     SELECT 
@@ -245,11 +222,6 @@ app.get('/admin/alugueis-ativos', verificarToken, verificarAdmin, (req: Request,
   });
 });
 
-// ==========================================
-// 🔑 ROTAS DE OPERAÇÃO DE LOCAÇÃO (RESERVAS)
-// ==========================================
-
-// Efetuar reserva de veículo com trava de segurança por CPF ativo
 app.put('/motos/:id/alugar', verificarToken, (req: AutenticadoRequest, res: Response) => {
   const { id } = req.params; 
   const { dias, valor_total, documento_condutor } = req.body; 
@@ -276,13 +248,12 @@ app.put('/motos/:id/alugar', verificarToken, (req: AutenticadoRequest, res: Resp
       `;
       db.query(sqlReserva, [piloto.id, id, Number(dias), valor_total, documento_condutor], (errReserva) => {
         if (errReserva) return res.status(500).json({ erro: errReserva.message });
-        res.json({ mensagem: 'Locação aprovada! Máquina liberada para pista! 🏁' });
+        res.json({ mensagem: 'Locação aprovada! Máquina liberada para pista!' });
       });
     });
   });
 });
 
-// Devolver veículo (Recolhimento para a garagem e encerramento de contrato)
 app.put('/motos/:id/devolver', verificarToken, (req: AutenticadoRequest, res: Response) => {
   const { id } = req.params;
   const usuario_id = req.usuarioLogado?.id;
@@ -298,12 +269,11 @@ app.put('/motos/:id/devolver', verificarToken, (req: AutenticadoRequest, res: Re
     `;
     db.query(sqlReserva, [usuario_id, id], (errReserva) => {
       if (errReserva) return res.status(500).json({ erro: errReserva.message });
-      res.json({ mensagem: 'Veículo recolhido para a garagem. Contrato encerrado! 🏁' });
+      res.json({ mensagem: 'Veículo recolhido para a garagem. Contrato encerrado!' });
     });
   });
 });
 
-// Buscar contratos em andamento do usuário logado
 app.get('/meus-alugueis', verificarToken, (req: AutenticadoRequest, res: Response) => {
   const usuario_id = req.usuarioLogado?.id;
   const sql = `
@@ -318,7 +288,6 @@ app.get('/meus-alugueis', verificarToken, (req: AutenticadoRequest, res: Respons
   });
 });
 
-// Buscar histórico de contratos concluídos do usuário logado
 app.get('/historico-alugueis', verificarToken, (req: AutenticadoRequest, res: Response) => {
   const usuario_id = req.usuarioLogado?.id;
   const sql = `
@@ -333,10 +302,7 @@ app.get('/historico-alugueis', verificarToken, (req: AutenticadoRequest, res: Re
   });
 });
 
-// ==========================================
-// 🚀 INICIALIZAÇÃO DO SERVIDOR
-// ==========================================
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor Balsante Motos rodando redondo na porta ${PORT}!`);
 });
