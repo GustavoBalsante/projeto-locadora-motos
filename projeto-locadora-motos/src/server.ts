@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import express, { Request, Response, NextFunction } from 'express';
 import mysql from 'mysql2';
 import bcrypt from 'bcrypt';
@@ -7,17 +8,13 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// ==========================================
-// ⚙️ CONFIGURAÇÕES E DIRETÓRIOS
-// ==========================================
-const JWT_SECRET = 'CHAVE_SECRETA_SUPER_SEGURA';
+const JWT_SECRET = process.env.JWT_SECRET || 'CHAVE_SECRETA_SUPER_SEGURA';
 const UPLOADS_DIR = './uploads';
 
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR);
 }
 
-// Configuração estruturada do Multer para upload de imagens da frota
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, 'uploads/');
@@ -35,14 +32,11 @@ app.use(cors());
 app.use(express.json());
 app.use('/uploads', express.static('uploads'));
 
-// ==========================================
-// 🗄️ CONEXÃO COM O BANCO DE DADOS (MySQL)
-// ==========================================
 const db = mysql.createConnection({
-  host: 'localhost',
-  user: 'root',
-  password: 'Gbn341523@',
-  database: 'db_locadora'
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 });
 
 db.connect((err) => {
@@ -50,7 +44,7 @@ db.connect((err) => {
     console.error('❌ Erro crítico de conexão no MySQL:', err.message);
     return;
   }
-  console.log('✅ Banco de dados db_locadora conectado e sincronizado com sucesso!');
+  console.log('✅ Banco de dados conectado e sincronizado com sucesso!');
 });
 
 // ==========================================
